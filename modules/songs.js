@@ -1,12 +1,12 @@
 ;
 var lyrics = require("./lyrics");
 // songs object constructor
-var song = function () {
+var song = function (albumTitle, songURL, year) {
     this.name = "";
-    this.year = "";
+    this.year = year;
     this.trackNumber = "";
-    this.album = "";
-    this.link = "";
+    this.album = albumTitle;
+    this.link = songURL;
     this.artist = "";
     this.lyrics = new lyrics;
 }

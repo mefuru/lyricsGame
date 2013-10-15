@@ -104,11 +104,8 @@ var addSongs = function (year, albumTitle, $, callback) {
 	var processSongsTasks = [];
     $(".song_list .song_link").each(function() {
 		var songURL = (homeURL + this.attr("href"));
-		var track = new song();
+		var track = new song(albumTitle, songURL, year);
 		var songlyrics = new lyrics();
-	    track.addAlbum(albumTitle);
-		track.addLink(songURL);
-	    track.addYear(year);
 		var task = async.apply(processSong, songURL, track, songlyrics);
     	processSongsTasks.push(task);
     });
