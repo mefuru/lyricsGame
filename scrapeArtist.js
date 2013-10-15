@@ -34,6 +34,7 @@ request(artistURL+rapper.name, function (error, response, body) {
 });
 
 // Process artist page
+
 var addAlbums = function (body) {
 	// Update rapper class with URL and name
 	var $ = cheerio.load(body);
@@ -46,7 +47,7 @@ var addAlbums = function (body) {
     var processAlbumsTasks = [];
     $(".album_list li a").each(function() {
 		var baseAlbumURL = (homeURL + this.attr("href"));
-		var task = async.apply(processAlbum, baseAlbumURL);
+		var task = buildfn(baseAlbumURL);
 		processAlbumsTasks.push(task);
     });
 
@@ -68,34 +69,37 @@ var addAlbums = function (body) {
     })
 };
 
-// Process album page(s). Callbacks required for async.parallel to work
-var processAlbum = function (baseAlbumURL, callback) {
-	// https://github.com/caolan/async#parallel
-	console.log("processing album", baseAlbumURL);
-	request(baseAlbumURL, function (error, response, body) {
-		console.log("album processed", baseAlbumURL);
-		if (!error && response.statusCode == 200) {
-		    var $ = cheerio.load(body);
-		    var albumTitle = utilsRegex.obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
-			if(_.indexOf(rapper.albums, albumTitle) == -1) {
-				rapper.addAlbum(albumTitle);
-		    }
-		    // Extract album year from albumTitle if present
-			var year = albumTitle.match(/\(\d{4}\)/);
-		    if (year===null) {
-				year = -1;
-		    } else {
-				year = year[0].replace(/(\(|\))/g,"");
-		    }
-		    // *** Call the callback once the addSongs function is complete ***
-		    addSongs(year, albumTitle, $, function (err) {
-				callback(err);
-		    });
-		} else {
-		    console.log("Error in retrieveing album: " + error);
-		    callback(error);
-		}
-	});
+var buildfn = function(baseAlbumURL) {
+	// Process album page(s). Callbacks required for async.parallel to work
+	var processAlbum = function (callback) {
+		// https://github.com/caolan/async#parallel
+		console.log("processing album", baseAlbumURL);
+		request(baseAlbumURL, function (error, response, body) {
+			console.log("album processed", baseAlbumURL);
+			if (!error && response.statusCode == 200) {
+			    var $ = cheerio.load(body);
+			    var albumTitle = utilsRegex.obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
+				if(_.indexOf(rapper.albums, albumTitle) == -1) {
+					rapper.addAlbum(albumTitle);
+			    }
+			    // Extract album year from albumTitle if present
+				var year = albumTitle.match(/\(\d{4}\)/);
+			    if (year===null) {
+					year = -1;
+			    } else {
+					year = year[0].replace(/(\(|\))/g,"");
+			    }
+			    // *** Call the callback once the addSongs function is complete ***
+			    addSongs(year, albumTitle, $, function (err) {
+					callback(err);
+			    });
+			} else {
+			    console.log("Error in retrieveing album: " + error);
+			    callback(error);
+			}
+		});
+	};
+	return processAlbum;
 };
 
 // process song(s)
@@ -105,7 +109,7 @@ var addSongs = function (year, albumTitle, $, callback) {
 		var songURL = (homeURL + this.attr("href"));
 		var track = new song(albumTitle, songURL, year);
 		var songlyrics = new lyrics();
-		var task = async.apply(processSong, songURL, track, songlyrics);
+		var task = buildfn2(songURL, track, songlyrics);
 		processSongsTasks.push(task);
     });
     async.parallel(processSongsTasks, function (errors, results) {
@@ -114,25 +118,28 @@ var addSongs = function (year, albumTitle, $, callback) {
     });
 };
 
-// Create process song function and then copy what was done above
-var processSong = function (songURL, track, songlyrics, callback) {
-	console.log('processing song', songURL);
-	request(songURL, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-		var $ = cheerio.load(body);
-		var songTitle = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"]);
-			var trackNumber = $(".album_title_and_track_number").text().trim().split(" ")[1];
-			var lyricsText = $(".lyrics_container .lyrics p").text();
-			var songlyrics = lyricsText.split("\n");
-			track.addSongName(songTitle);
-			track.addTrackNumber(trackNumber);
-			track.addArtist(rapper.name);
-			track.addLyrics(songlyrics);
-			rapper.addSong(track);
-			callback(null);
-		} else {
-			console.log("Error retrieveing song details");
-			callback(error);
-		}
-	});
+var buildfn2 = function (songURL, track, songlyrics) {
+	// Create process song function and then copy what was done above
+	var processSong = function (callback) {
+		console.log('processing song', songURL);
+		request(songURL, function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+			var $ = cheerio.load(body);
+			var songTitle = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"]);
+				var trackNumber = $(".album_title_and_track_number").text().trim().split(" ")[1];
+				var lyricsText = $(".lyrics_container .lyrics p").text();
+				var songlyrics = lyricsText.split("\n");
+				track.addSongName(songTitle);
+				track.addTrackNumber(trackNumber);
+				track.addArtist(rapper.name);
+				track.addLyrics(songlyrics);
+				rapper.addSong(track);
+				callback(null);
+			} else {
+				console.log("Error retrieveing song details");
+				callback(error);
+			}
+		});
+	};
+	return processSong;
 };
