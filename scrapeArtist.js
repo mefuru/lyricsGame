@@ -70,9 +70,8 @@ var addAlbums = function (body) {
 };
 
 var buildfn = function(baseAlbumURL) {
-	// Process album page(s). Callbacks required for async.parallel to work
+	// Closure invoked w/ async.parallel
 	var processAlbum = function (callback) {
-		// https://github.com/caolan/async#parallel
 		console.log("processing album", baseAlbumURL);
 		request(baseAlbumURL, function (error, response, body) {
 			console.log("album processed", baseAlbumURL);
@@ -89,7 +88,6 @@ var buildfn = function(baseAlbumURL) {
 			    } else {
 					year = year[0].replace(/(\(|\))/g,"");
 			    }
-			    // *** Call the callback once the addSongs function is complete ***
 			    addSongs(year, albumTitle, $, function (err) {
 					callback(err);
 			    });
@@ -119,7 +117,7 @@ var addSongs = function (year, albumTitle, $, callback) {
 };
 
 var buildfn2 = function (songURL, track, songlyrics) {
-	// Create process song function and then copy what was done above
+	// Closure invoked w/ async.parallel
 	var processSong = function (callback) {
 		console.log('processing song', songURL);
 		request(songURL, function (error, response, body) {
