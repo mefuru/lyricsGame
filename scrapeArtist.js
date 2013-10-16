@@ -17,13 +17,16 @@ var artist = require("./modules/artist"),
 // http://mongoosejs.com/docs/guide.html
 
 var geniusQuery = {
-    albums: function(artistName, callback) {
+    albumURLs: function(artistName, callback) {
         var artistURL = "http://rapgenius.com/artists/";
         request(artistURL + artistName, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-		            callback(body);
+	              var $ = cheerio.load(body);
+                callback($(".album_list li a").map(function() {
+                    return $(this).attr("href");
+                }));
             } else {
-		            console.log("Artist not found on Rap Genius");
+		            throw "Artist not found on Rap Genius";
             }
         });
     },
@@ -36,14 +39,11 @@ var geniusQuery = {
 
 // Process artist page
 
-var addAlbums = function (body) {
-	  // Update rapper class with URL and name
-	  var $ = cheerio.load(body);
-
+var addAlbums = function (albumURLs) {
 	  // For each album, create but don't execute an instance of the processAlbum function - save into an array
     var processAlbumsTasks = [];
-    $(".album_list li a").each(function() {
-		    var baseAlbumURL = (homeURL + this.attr("href"));
+    albumURLs.forEach(function(albumURL) {
+		    var baseAlbumURL = (homeURL + albumURL);
 		    var task = buildfn(baseAlbumURL);
 		    processAlbumsTasks.push(task);
     });
