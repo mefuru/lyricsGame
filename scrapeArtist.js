@@ -26,7 +26,12 @@ var geniusQuery = {
 		            console.log("Artist not found on Rap Genius");
             }
         });
-    }
+    },
+
+    // artist: function(artistName, callback) {
+    //         url: $("[property='og:url']").attr("content"),
+    //         name: $("[property='og:title']").attr("content")
+    // }
 };
 
 // Process artist page
@@ -34,10 +39,6 @@ var geniusQuery = {
 var addAlbums = function (body) {
 	  // Update rapper class with URL and name
 	  var $ = cheerio.load(body);
-    var URL = $("[property='og:url']").attr("content");
-    var nameFromURL = $("[property='og:title']").attr("content");
-    rapper.addLink(URL);
-    rapper.updateName(nameFromURL);
 
 	  // For each album, create but don't execute an instance of the processAlbum function - save into an array
     var processAlbumsTasks = [];
