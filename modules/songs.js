@@ -1,5 +1,4 @@
 ;
-var lyrics = require("./lyrics");
 // songs object constructor
 var song = function (albumTitle, songURL, year) {
     this.name = "";
@@ -8,7 +7,7 @@ var song = function (albumTitle, songURL, year) {
     this.album = albumTitle;
     this.link = songURL;
     this.artist = "";
-    this.lyrics = new lyrics;
+    this.lyrics = [];
 }
 
 // prototype functions
@@ -47,11 +46,17 @@ song.prototype.printName = function () {
 }
 
 song.prototype.printLyrics = function () {
-    this.lyrics.printLyrics();
+    console.log(this.lyrics);
 }
 
 song.prototype.printFourLyricsFromASong = function () {
-    this.lyrics.printFourRandomLines();
+    var max = this.lyrics.length - 4;
+        var min = 0;
+        var x = Math.floor(Math.random() * (max - min + 1) + min);
+        console.log(this.lyrics[x]);
+        console.log(this.lyrics[x+1]);
+        console.log(this.lyrics[x+2]);
+        console.log(this.lyrics[x+3]);
 }
 
 

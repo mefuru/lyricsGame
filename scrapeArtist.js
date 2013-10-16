@@ -1,6 +1,5 @@
 var artist = require("./modules/artist"),
 	song = require("./modules/songs"),
-	lyrics = require("./modules/lyrics"),
 	utilsRegex = require("./utils/regex"),
 	cheerio = require("cheerio"),
 	request = require("request"),
@@ -61,7 +60,7 @@ var addAlbums = function (body) {
 		rapperMongoDocument.save(function (err) {
 			if(err===null) {
 				console.log("Data for " + rapper.name + " successfully saved into DB");
-				console.log('PRINTING ALL SONGS');
+				rapper.printFourLyricsFromARandomSong();
 				process.exit(1);
 			} else {
 				console.log('Following error occured when saving '+ rapper.name +' into the DB: ' + err);
@@ -108,8 +107,7 @@ var addSongs = function (year, albumTitle, $, callback) {
     $(".song_list .song_link").each(function() {
 		var songURL = (homeURL + this.attr("href"));
 		var track = new song(albumTitle, songURL, year);
-		var songlyrics = new lyrics();
-		var task = buildfn2(songURL, track, songlyrics);
+		var task = buildfn2(songURL, track);
 		processSongsTasks.push(task);
     });
     async.parallel(processSongsTasks, function (errors, results) {
@@ -118,7 +116,7 @@ var addSongs = function (year, albumTitle, $, callback) {
     });
 };
 
-var buildfn2 = function (songURL, track, songlyrics) {
+var buildfn2 = function (songURL, track) {
 	// Closure invoked w/ async.parallel
 	var processSong = function (callback) {
 		console.log('processing song', songURL);
