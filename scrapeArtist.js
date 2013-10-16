@@ -16,21 +16,18 @@ var artist = require("./modules/artist"),
 // https://github.com/caolan/async
 // http://mongoosejs.com/docs/guide.html
 
-// Connect to DB
-mongoose.connect("mongodb://localhost/rapgenius");
-
-var artistURL = "http://rapgenius.com/artists/";
-var homeURL = "http://rapgenius.com";
-var rapper = new artist(process.argv[2] || "Skinnyman");
-
-// Search for artist
-request(artistURL+rapper.name, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-		    addAlbums(body);
-    } else {
-		    console.log("Artist not found on Rap Genius");
+var geniusQuery = {
+    albums: function(artistName, callback) {
+        var artistURL = "http://rapgenius.com/artists/";
+        request(artistURL + artistName, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+		            callback(body);
+            } else {
+		            console.log("Artist not found on Rap Genius");
+            }
+        });
     }
-});
+};
 
 // Process artist page
 
@@ -141,3 +138,9 @@ var buildfn2 = function (songURL, track) {
 	  };
 	  return processSong;
 };
+
+// Connect to DB
+mongoose.connect("mongodb://localhost/rapgenius");
+var homeURL = "http://rapgenius.com";
+var rapper = new artist(process.argv[2] || "Skinnyman");
+geniusQuery.albums(rapper.name, addAlbums);
