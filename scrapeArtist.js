@@ -57,8 +57,7 @@ var addAlbums = function (rapper, albumURLs) {
 				        rapper.printFourLyricsFromARandomSong();
 				        process.exit(1);
 			      } else {
-				        console.log('Following error occured when saving '+ rapper.name +' into the DB: ' + err);
-				        process.exit(2);
+				        throw 'Error occured when saving '+ rapper.name +' into the DB: ' + err;
 			      }
 		    });
     })
