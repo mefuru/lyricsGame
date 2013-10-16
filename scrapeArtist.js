@@ -55,7 +55,7 @@ var addAlbums = function (rapper, albumURLs) {
 			      if(err===null) {
 				        console.log("Data for " + rapper.name + " successfully saved into DB");
 				        rapper.printFourLyricsFromARandomSong();
-				        process.exit(1);
+				        process.exit(0);
 			      } else {
 				        throw 'Error occured when saving '+ rapper.name +' into the DB: ' + err;
 			      }
