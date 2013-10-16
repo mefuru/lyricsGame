@@ -62,12 +62,6 @@ var addAlbums = function (body) {
 			if(err===null) {
 				console.log("Data for " + rapper.name + " successfully saved into DB");
 				console.log('PRINTING ALL SONGS');
-				rapper.printSongs();
-				console.log("PRINTING URL");
-				rapper.printLink();
-				console.log("PRINTING ALL INFO");
-				rapper.printAllInfo();
-				// rapper.printFourLyricsFromARandomSong();
 				process.exit(1);
 			} else {
 				console.log('Following error occured when saving '+ rapper.name +' into the DB: ' + err);
