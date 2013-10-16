@@ -7,7 +7,7 @@ function obtainAlbumTitle(album) {
 };
 
 function obtainSongTitle(song) {
-	song = song.replace(/^\s.\s*/, "");
+	  song = song.replace(/^\s.\s*/, "");
     song = song.replace(/\s*.{6}\s*$/, "");
     song = song.replace(/\\/, "");
     return song;
