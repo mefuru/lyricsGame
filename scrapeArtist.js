@@ -36,7 +36,7 @@ var geniusQuery = {
 
 // Process artist page
 
-var addAlbums = function (albumURLs) {
+var addAlbums = function (rapper, albumURLs) {
 	  // For each album, create but don't execute an instance of the processAlbum function - save into an array
     var processAlbumsTasks = [];
     albumURLs.forEach(function(albumURL) {
@@ -140,4 +140,6 @@ var buildfn2 = function (songURL, track) {
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
-geniusQuery.albumURLs(rapper.name, addAlbums);
+geniusQuery.albumURLs(rapper.name, function(albumURLs) {
+    addAlbums(rapper, albumURLs)
+});
