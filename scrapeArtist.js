@@ -20,14 +20,11 @@ var geniusQuery = {
     albumURLs: function(artistName, callback) {
         var artistURL = "http://rapgenius.com/artists/";
         request(artistURL + artistName, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-	              var $ = cheerio.load(body);
-                callback($(".album_list li a").map(function() {
-                    return $(this).attr("href");
-                }));
-            } else {
-		            throw "Artist not found on Rap Genius";
-            }
+            if (error || response.statusCode !== 200) throw "Artist not found on Rap Genius";
+	          var $ = cheerio.load(body);
+            callback($(".album_list li a").map(function() {
+                return $(this).attr("href");
+            }));
         });
     },
 
@@ -47,7 +44,6 @@ var addAlbums = function (albumURLs) {
 		    var task = buildfn(baseAlbumURL);
 		    processAlbumsTasks.push(task);
     });
-
 
     // Have an anonymous callback funtion that saves the data into rapgenius DB
     async.parallel(processAlbumsTasks, function (errors, results) {
@@ -144,4 +140,4 @@ var buildfn2 = function (songURL, track) {
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
-geniusQuery.albums(rapper.name, addAlbums);
+geniusQuery.albumURLs(rapper.name, addAlbums);
