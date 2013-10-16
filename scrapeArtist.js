@@ -51,15 +51,23 @@ var addAlbums = function (body) {
 		processAlbumsTasks.push(task);
     });
 
-    // Run all funtions saved into task array in parallel
+
     // Have an anonymous callback funtion that saves the data into rapgenius DB
     async.parallel(processAlbumsTasks, function (errors, results) {
+   	// https://github.com/caolan/async#parallel
 		console.log('all albums processed', errors, results);
 		// New Mongo document based on a Mongoose model
 		var rapperMongoDocument = new Artist(rapper);
 		rapperMongoDocument.save(function (err) {
 			if(err===null) {
 				console.log("Data for " + rapper.name + " successfully saved into DB");
+				console.log('PRINTING ALL SONGS');
+				rapper.printSongs();
+				console.log("PRINTING URL");
+				rapper.printLink();
+				console.log("PRINTING ALL INFO");
+				rapper.printAllInfo();
+				// rapper.printFourLyricsFromARandomSong();
 				process.exit(1);
 			} else {
 				console.log('Following error occured when saving '+ rapper.name +' into the DB: ' + err);
