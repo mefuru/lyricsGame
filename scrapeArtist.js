@@ -73,10 +73,11 @@ var buildfn = function(baseAlbumURL) {
 			      console.log("album processed", baseAlbumURL);
 			      if (!error && response.statusCode == 200) {
 			          var $ = cheerio.load(body);
-			          var albumTitle = utilsRegex.obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
-				        if(_.indexOf(rapper.albums, albumTitle) == -1) {
-					          rapper.addAlbum(albumTitle);
-			          }
+                var albumTitle = utilsRegex
+                                .obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
+
+					      rapper.addAlbum(albumTitle);
+
 			          // Extract album year from albumTitle if present
 				        var year = albumTitle.match(/\(\d{4}\)/);
 			          if (year===null) {

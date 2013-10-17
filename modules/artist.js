@@ -1,5 +1,6 @@
 ;
-var util = require('util');
+var util = require('util'),
+	_ = require("underscore");
 
 // constructor
 var artist = function (name) {
@@ -24,7 +25,9 @@ artist.prototype.addSong = function (song) {
 }
 
 artist.prototype.addAlbum = function (albumName) {
-    this.albums.push(albumName);
+		if(_.indexOf(this.albums, albumName) == -1) {
+        this.albums.push(albumName);
+    }
 }
 
 // console print/query methods
