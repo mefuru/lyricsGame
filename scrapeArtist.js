@@ -43,15 +43,9 @@ var geniusQuery = {
 
 			          // Extract album year from albumTitle if present
 				        var year = title.match(/\(\d{4}\)/);
-			          if (year===null) {
-					          year = -1;
-			          } else {
-					          year = year[0].replace(/(\(|\))/g,"");
-			          }
-
                 callback(null, {
                     title: title,
-                    year: year
+                    year: year === null ? -1 : year[0].replace(/(\(|\))/g,"")
                 });
             }
         });
