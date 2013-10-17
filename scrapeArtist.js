@@ -32,6 +32,31 @@ var geniusQuery = {
         });
     },
 
+    albumData: function(baseAlbumURL, callback) {
+		    request(baseAlbumURL, function (error, response, body) {
+            if (error || response.statusCode !== 200) {
+                callback(error);
+            } else {
+			          var $ = cheerio.load(body);
+                var title = utilsRegex
+                    .obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
+
+			          // Extract album year from albumTitle if present
+				        var year = title.match(/\(\d{4}\)/);
+			          if (year===null) {
+					          year = -1;
+			          } else {
+					          year = year[0].replace(/(\(|\))/g,"");
+			          }
+
+                callback(null, {
+                    title: title,
+                    year: year
+                });
+            }
+        });
+    }
+
     // artist: function(artistName, callback) {
     //         url: $("[property='og:url']").attr("content"),
     //         name: $("[property='og:title']").attr("content")
