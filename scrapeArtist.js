@@ -59,7 +59,7 @@ var geniusQuery = {
 
 // Process artist page
 
-var addAlbums = function (rapper, albumURLs) {
+var getAlbums = function (albumURLs, callback) {
 	  // For each album, create but don't execute an instance of the processAlbum function - save into an array
     var processAlbumsTasks = [];
     albumURLs.forEach(function(albumURL) {
@@ -69,19 +69,7 @@ var addAlbums = function (rapper, albumURLs) {
     });
 
     // Have an anonymous callback funtion that saves the data into rapgenius DB
-    async.parallel(processAlbumsTasks, function (errors, results) {
-   	    // https://github.com/caolan/async#parallel
-		    console.log('all albums processed', errors, results);
-		    // New Mongo document based on a Mongoose model
-		    var rapperMongoDocument = new Artist(rapper);
-		    rapperMongoDocument.save(function (err) {
-            if (err !== null) throw 'Error when saving '+ rapper.name +' into the DB: ' + err;
-
-				    console.log("Data for " + rapper.name + " successfully saved into DB");
-				    rapper.printFourLyricsFromARandomSong();
-				    process.exit(0);
-		    });
-    })
+    async.parallel(processAlbumsTasks, callback);
 };
 
 var buildfn = function(baseAlbumURL) {
