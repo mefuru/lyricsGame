@@ -74,13 +74,15 @@ var geniusQuery = {
 
 // Process artist page
 
-var getAlbums = function (albumURLs, callback) {
-    async.parallel(_.map(albumURLs, function(albumURL) {
-	      return function (parallelCallback) {
-            console.log("processing album", albumURL)
-            geniusQuery.albumData(homeURL + albumURL, parallelCallback);
-        };
-    }), callback);
+var getAlbums = function (artistName, callback) {
+    geniusQuery.albumURLs(artistName, function(error, albumURLs) {
+        async.parallel(_.map(albumURLs, function(albumURL) {
+	          return function (parallelCallback) {
+                console.log("processing album", albumURL)
+                geniusQuery.albumData(homeURL + albumURL, parallelCallback);
+            };
+        }), callback);
+    });
 };
 
 // process song(s)
