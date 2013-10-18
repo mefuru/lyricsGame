@@ -74,7 +74,7 @@ var geniusQuery = {
 
 // Process artist page
 
-var getAlbums = function (artistName, callback) {
+var getAlbumsForArtist = function(artistName, callback) {
     geniusQuery.albumURLs(artistName, function(error, albumURLs) {
         async.parallel(_.map(albumURLs, function(albumURL) {
 	          return function (parallelCallback) {
@@ -85,7 +85,7 @@ var getAlbums = function (artistName, callback) {
     });
 };
 
-var getSongsForAllAlbums = function(albums, callback) {
+var getSongsForAlbums = function(albums, callback) {
     async.parallel(_.map(albums, function(album) {
         return function(parallelCallback) {
             getAlbumSongs(album, album.songURLs, parallelCallback);
@@ -125,11 +125,12 @@ var saveArtist = function(rapper, callback) {
 
 // Connect to DB
 mongoose.connect("mongodb://localhost/rapgenius");
+
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
-getAlbums(rapper.name, function(error, albums) {
+getAlbumsForArtist(rapper.name, function(error, albums) {
     _.map(albums, function(album) { rapper.addAlbum(album.title) });
-    getSongsForAllAlbums(albums, function(error, songsData) {
+    getSongsForAlbums(albums, function(error, songsData) {
         _.map(_.map(_.flatten(songsData), songDataToTrack), function(track) {
             rapper.addSong(track);
         });
