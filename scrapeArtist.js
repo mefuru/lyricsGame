@@ -21,8 +21,7 @@ var geniusQuery = {
         var artistURL = "http://rapgenius.com/artists/";
         request(artistURL + artistName, function (error, response, body) {
             if (error || response.statusCode !== 200) {
-                error = "Artist not found";
-                callback(error);
+                callback("Artist not found");
             } else {
 	              var $ = cheerio.load(body);
                 callback(null, $(".album_list li a").map(function() {
