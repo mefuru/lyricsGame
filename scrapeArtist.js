@@ -126,10 +126,25 @@ var buildfn2 = function (songURL, track) {
 	  return processSong;
 };
 
-var getSongs = function(songURLs, callback) {
+				// rapper.printFourLyricsFromARandomSong();
+
+var getSongsForAllAlbums = function(albums, callback) {
+    async.parallel(_.map(albums, function(album) {
+        return function(parallelCallback) {
+            getAlbumSongs(album.title, album.songURLs, parallelCallback);
+        };
+    }), function (errors, songs) {
+		    callback(errors, songs);
+    });
+};
+
+var getAlbumSongs = function(title, songURLs, callback) {
     async.parallel(_.map(songURLs, function(x) {
         return function(parallelCallback) {
-            geniusQuery.songData(homeURL + x, parallelCallback);
+            geniusQuery.songData(homeURL + x, function(error, song) {
+                song.albumTitle = title;
+                parallelCallback(error, song);
+            });
         };
     }), function (errors, songs) {
 		    callback(errors, songs);
