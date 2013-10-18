@@ -151,6 +151,13 @@ var getAlbumSongs = function(title, songURLs, callback) {
     });
 };
 
+var songDataToTrack = function(songData) {
+    var track = new song(songData.album.title, songData.songURL, songData.album.year);
+		track.addSongName(songData.title);
+		track.addTrackNumber(songData.trackNumber);
+		track.addLyrics(songData.lyrics);
+    return track;
+};
 // Connect to DB
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
