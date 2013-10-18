@@ -78,17 +78,11 @@ var geniusQuery = {
 
 var getAlbums = function (albumURLs, callback) {
     async.parallel(_.map(albumURLs, function(albumURL) {
-		    return buildfn(homeURL + albumURL);
+	      return function (parallelCallback) {
+            console.log("processing album", albumURL)
+            geniusQuery.albumData(homeURL + albumURL, parallelCallback);
+        };
     }), callback);
-};
-
-var buildfn = function(baseAlbumURL) {
-	  // Closure invoked w/ async.parallel
-	  var processAlbum = function (callback) {
-		    console.log("processing album", baseAlbumURL);
-        geniusQuery.albumData(baseAlbumURL, callback);
-	  };
-	  return processAlbum;
 };
 
 // process song(s)
