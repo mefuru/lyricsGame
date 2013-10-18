@@ -57,9 +57,11 @@ var geniusQuery = {
 		    request(songURL, function (error, response, body) {
 			      if (error !== null || response.statusCode !== 200) throw "Couldn't get song: " + songURL;
 			      var $ = cheerio.load(body);
+            var title = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"])
+            console.log("Got song: ", title);
             var lyricsText = $(".lyrics_container .lyrics p").text();
             callback(null, {
-			          songTitle: utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"]),
+			          title: title,
 				        trackNumber: $(".album_title_and_track_number").text().trim().split(" ")[1],
 				        lyricsText: lyricsText,
 				        songlyrics: lyricsText.split("\n")
