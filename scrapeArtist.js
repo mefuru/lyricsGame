@@ -70,11 +70,6 @@ var geniusQuery = {
             });
         });
     }
-
-    // artist: function(artistName, callback) {
-    //         url: $("[property='og:url']").attr("content"),
-    //         name: $("[property='og:title']").attr("content")
-    // }
 };
 
 // Process artist page
