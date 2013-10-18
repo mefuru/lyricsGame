@@ -45,7 +45,10 @@ var geniusQuery = {
 				        var year = title.match(/\(\d{4}\)/);
                 callback(null, {
                     title: title,
-                    year: year === null ? -1 : year[0].replace(/(\(|\))/g,"")
+                    year: year === null ? -1 : year[0].replace(/(\(|\))/g,""),
+                    songURLs: $(".song_list .song_link").map(function() {
+                        return this.attr("href");
+                    })
                 });
             }
         });
