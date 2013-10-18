@@ -135,6 +135,7 @@ getAlbums(rapper.name, function(error, albums) {
         });
 
         saveArtist(rapper, function() {
+            rapper.printFourLyricsFromARandomSong();
             process.exit(0);
         });
     });
