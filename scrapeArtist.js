@@ -131,18 +131,18 @@ var buildfn2 = function (songURL, track) {
 var getSongsForAllAlbums = function(albums, callback) {
     async.parallel(_.map(albums, function(album) {
         return function(parallelCallback) {
-            getAlbumSongs(album.title, album.songURLs, parallelCallback);
+            getAlbumSongs(album, album.songURLs, parallelCallback);
         };
     }), function (errors, songs) {
 		    callback(errors, songs);
     });
 };
 
-var getAlbumSongs = function(title, songURLs, callback) {
+var getAlbumSongs = function(album, songURLs, callback) {
     async.parallel(_.map(songURLs, function(x) {
         return function(parallelCallback) {
             geniusQuery.songData(homeURL + x, function(error, song) {
-                song.albumTitle = title;
+                song.album = album;
                 parallelCallback(error, song);
             });
         };
