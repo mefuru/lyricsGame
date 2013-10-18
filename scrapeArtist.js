@@ -158,6 +158,14 @@ var songDataToTrack = function(songData) {
 		track.addLyrics(songData.lyrics);
     return track;
 };
+
+var saveArtist = function(rapper, callback) {
+		new Artist(rapper).save(function (err) {
+        if (err !== null) throw "Error saving " + rapper.name + " into DB: " + err;
+        callback();
+		});
+};
+
 // Connect to DB
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
