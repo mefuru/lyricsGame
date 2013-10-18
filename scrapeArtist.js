@@ -145,6 +145,13 @@ var buildfn2 = function (songURL, track) {
 	  return processSong;
 };
 
+var getSongURLs = function(albums) {
+    return _.reduce(albums, function(a, x) {
+        return a.concat(x.data(".song_list .song_link").map(function() {
+            return this.attr("href");
+        }));
+    }, []);
+};
 // Connect to DB
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
