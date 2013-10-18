@@ -65,7 +65,6 @@ var geniusQuery = {
             callback(null, {
 			          title: title,
 				        trackNumber: $(".album_title_and_track_number").text().trim().split(" ")[1],
-				        lyricsText: lyricsText,
 				        lyrics: lyricsText.split("\n")
             });
         });
