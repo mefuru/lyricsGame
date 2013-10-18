@@ -77,16 +77,9 @@ var geniusQuery = {
 // Process artist page
 
 var getAlbums = function (albumURLs, callback) {
-	  // For each album, create but don't execute an instance of the processAlbum function - save into an array
-    var processAlbumsTasks = [];
-    albumURLs.forEach(function(albumURL) {
-		    var baseAlbumURL = (homeURL + albumURL);
-		    var task = buildfn(baseAlbumURL);
-		    processAlbumsTasks.push(task);
-    });
-
-    // Have an anonymous callback funtion that saves the data into rapgenius DB
-    async.parallel(processAlbumsTasks, callback);
+    async.parallel(_.map(albumURLs, function(albumURL) {
+		    return buildfn(homeURL + albumURL);
+    }), callback);
 };
 
 var buildfn = function(baseAlbumURL) {
