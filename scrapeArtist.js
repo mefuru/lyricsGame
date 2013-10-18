@@ -85,49 +85,6 @@ var getAlbums = function (artistName, callback) {
     });
 };
 
-// process song(s)
-var addSongs = function (year, albumTitle, $, callback) {
-	  var processSongsTasks = [];
-    $(".song_list .song_link").each(function() {
-		    var songURL = (homeURL + this.attr("href"));
-		    var track = new song(albumTitle, songURL, year);
-		    var task = buildfn2(songURL, track);
-		    processSongsTasks.push(task);
-    });
-    async.parallel(processSongsTasks, function (errors, results) {
-		    console.log("All songs in " + albumTitle + " processed", errors, results);
-		    callback(errors, results);
-    });
-};
-
-var buildfn2 = function (songURL, track) {
-	  // Closure invoked w/ async.parallel
-	  var processSong = function (callback) {
-		    console.log('processing song', songURL);
-		    request(songURL, function (error, response, body) {
-			      if (!error && response.statusCode == 200) {
-			          var $ = cheerio.load(body);
-			          var songTitle = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"]);
-				        var trackNumber = $(".album_title_and_track_number").text().trim().split(" ")[1];
-				        var lyricsText = $(".lyrics_container .lyrics p").text();
-				        var songlyrics = lyricsText.split("\n");
-				        track.addSongName(songTitle);
-				        track.addTrackNumber(trackNumber);
-				        track.addArtist(rapper.name);
-				        track.addLyrics(songlyrics);
-				        rapper.addSong(track);
-				        callback(null);
-			      } else {
-				        console.log("Error retrieveing song details");
-				        callback(error);
-			      }
-		    });
-	  };
-	  return processSong;
-};
-
-				// rapper.printFourLyricsFromARandomSong();
-
 var getSongsForAllAlbums = function(albums, callback) {
     async.parallel(_.map(albums, function(album) {
         return function(parallelCallback) {
@@ -171,8 +128,6 @@ mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
 getAlbums(rapper.name, function(error, albums) {
-    getSongsForAllAlbums(albums, function(error, songs) {
-        console.log(songs)
     _.map(albums, function(album) { rapper.addAlbum(album.title) });
     getSongsForAllAlbums(albums, function(error, songsData) {
         _.map(_.map(_.flatten(songsData), songDataToTrack), function(track) {
