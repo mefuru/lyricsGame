@@ -145,6 +145,16 @@ var buildfn2 = function (songURL, track) {
 	  return processSong;
 };
 
+var getSongs = function(songURLs, callback) {
+    async.parallel(_.map(songURLs, function(x) {
+        return function(parallelCallback) {
+            geniusQuery.songData(homeURL + x, parallelCallback);
+        };
+    }), function (errors, songs) {
+		    callback(errors, songs);
+    });
+};
+
 var getSongURLs = function(albums) {
     return _.reduce(albums, function(a, x) {
         return a.concat(x.data(".song_list .song_link").map(function() {
