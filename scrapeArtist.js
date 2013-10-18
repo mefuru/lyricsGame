@@ -55,7 +55,9 @@ var geniusQuery = {
 
     songData: function(songURL, callback) {
 		    request(songURL, function (error, response, body) {
-			      if (error !== null || response.statusCode !== 200) throw "Couldn't get song: " + songURL;
+			      if (error !== null || response.statusCode !== 200)
+                throw "Couldn't get song: " + songURL;
+
 			      var $ = cheerio.load(body);
             var title = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"])
             console.log("Got song: ", title);
