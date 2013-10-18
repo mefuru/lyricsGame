@@ -142,20 +142,13 @@ var getSongs = function(songURLs, callback) {
     });
 };
 
-var getSongURLs = function(albums) {
-    return _.reduce(albums, function(a, x) {
-        return a.concat(x.data(".song_list .song_link").map(function() {
-            return this.attr("href");
-        }));
-    }, []);
-};
 // Connect to DB
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
 geniusQuery.albumURLs(rapper.name, function(error, albumURLs) {
     getAlbums(albumURLs, function(error, albums) {
-        getSongs(getSongURLs(albums), function(error, songs) {
+        getSongs(_.pluck(albums, 'songURLs'), function(error, songs) {
 				    process.exit(0);
         });
     });
