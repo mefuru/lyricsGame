@@ -155,10 +155,8 @@ var getAlbumSongs = function(title, songURLs, callback) {
 mongoose.connect("mongodb://localhost/rapgenius");
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
-geniusQuery.albumURLs(rapper.name, function(error, albumURLs) {
-    getAlbums(albumURLs, function(error, albums) {
-        getSongs(_.pluck(albums, 'songURLs'), function(error, songs) {
-				    process.exit(0);
-        });
+getAlbums(rapper.name, function(error, albums) {
+    getSongsForAllAlbums(albums, function(error, songs) {
+        console.log(songs)
     });
 });
