@@ -26,7 +26,7 @@ var geniusQuery = {
             } else {
 	              var $ = cheerio.load(body);
                 callback(null, $(".album_list li a").map(function() {
-                    return $(this).attr("href");
+                    return this.attr("href");
                 }));
             }
         });
