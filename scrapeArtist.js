@@ -174,5 +174,9 @@ getAlbums(rapper.name, function(error, albums) {
     getSongsForAllAlbums(albums, function(error, songs) {
         console.log(songs)
     _.map(albums, function(album) { rapper.addAlbum(album.title) });
+    getSongsForAllAlbums(albums, function(error, songsData) {
+        _.map(_.map(_.flatten(songsData), songDataToTrack), function(track) {
+            rapper.addSong(track);
+        });
     });
 });
