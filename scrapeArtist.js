@@ -178,5 +178,9 @@ getAlbums(rapper.name, function(error, albums) {
         _.map(_.map(_.flatten(songsData), songDataToTrack), function(track) {
             rapper.addSong(track);
         });
+
+        saveArtist(rapper, function() {
+            process.exit(0);
+        });
     });
 });
