@@ -173,5 +173,6 @@ var rapper = new artist(process.argv[2] || "Skinnyman");
 getAlbums(rapper.name, function(error, albums) {
     getSongsForAllAlbums(albums, function(error, songs) {
         console.log(songs)
+    _.map(albums, function(album) { rapper.addAlbum(album.title) });
     });
 });
