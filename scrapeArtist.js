@@ -20,43 +20,37 @@ var geniusQuery = {
     albumURLs: function(artistName, callback) {
         var artistURL = "http://rapgenius.com/artists/";
         request(artistURL + artistName, function (error, response, body) {
-            if (error || response.statusCode !== 200) {
-                callback("Artist not found");
-            } else {
-	              var $ = cheerio.load(body);
-                callback(null, $(".album_list li a").map(function() {
-                    return this.attr("href");
-                }));
-            }
+            if (error || response.statusCode !== 200) callback("Artist not found");
+	          var $ = cheerio.load(body);
+            callback(null, $(".album_list li a").map(function() {
+                return this.attr("href");
+            }));
         });
     },
 
     albumData: function(baseAlbumURL, callback) {
 		    request(baseAlbumURL, function (error, response, body) {
-            if (error || response.statusCode !== 200) {
-                callback(error);
-            } else {
-			          var $ = cheerio.load(body);
-                var title = utilsRegex
-                    .obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
+            if (error || response.statusCode !== 200) callback(error);
 
-			          // Extract album year from albumTitle if present
-				        var year = title.match(/\(\d{4}\)/);
-                callback(null, {
-                    title: title,
-                    year: year === null ? -1 : year[0].replace(/(\(|\))/g,""),
-                    songURLs: $(".song_list .song_link").map(function() {
-                        return this.attr("href");
-                    })
-                });
-            }
+			      var $ = cheerio.load(body);
+            var title = utilsRegex
+                .obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
+
+			      // Extract album year from albumTitle if present
+				    var year = title.match(/\(\d{4}\)/);
+            callback(null, {
+                title: title,
+                year: year === null ? -1 : year[0].replace(/(\(|\))/g,""),
+                songURLs: $(".song_list .song_link").map(function() {
+                    return this.attr("href");
+                })
+            });
         });
     },
 
     songData: function(songURL, callback) {
 		    request(songURL, function (error, response, body) {
-			      if (error !== null || response.statusCode !== 200)
-                throw "Couldn't get song: " + songURL;
+			      if (error || response.statusCode !== 200) throw "Couldn't get song: " + songURL;
 
 			      var $ = cheerio.load(body);
             var title = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"])
