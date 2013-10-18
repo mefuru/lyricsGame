@@ -93,30 +93,7 @@ var buildfn = function(baseAlbumURL) {
 	  // Closure invoked w/ async.parallel
 	  var processAlbum = function (callback) {
 		    console.log("processing album", baseAlbumURL);
-		    request(baseAlbumURL, function (error, response, body) {
-			      console.log("album processed", baseAlbumURL);
-			      if (!error && response.statusCode == 200) {
-			          var $ = cheerio.load(body);
-                var albumTitle = utilsRegex
-                                .obtainAlbumTitle($("h1.name a.artist")["0"]["next"]["data"]);
-
-					      rapper.addAlbum(albumTitle);
-
-			          // Extract album year from albumTitle if present
-				        var year = albumTitle.match(/\(\d{4}\)/);
-			          if (year===null) {
-					          year = -1;
-			          } else {
-					          year = year[0].replace(/(\(|\))/g,"");
-			          }
-			          addSongs(year, albumTitle, $, function (err) {
-					          callback(err);
-			          });
-			      } else {
-			          console.log("Error in retrieveing album: " + error);
-			          callback(error);
-			      }
-		    });
+        geniusQuery.albumData(baseAlbumURL, callback);
 	  };
 	  return processAlbum;
 };
