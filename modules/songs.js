@@ -51,12 +51,12 @@ song.prototype.printLyrics = function () {
 
 song.prototype.printFourLyricsFromASong = function () {
     var max = this.lyrics.length - 4;
-        var min = 0;
-        var x = Math.floor(Math.random() * (max - min + 1) + min);
-        console.log(this.lyrics[x]);
-        console.log(this.lyrics[x+1]);
-        console.log(this.lyrics[x+2]);
-        console.log(this.lyrics[x+3]);
+    var min = 0;
+    var x = Math.floor(Math.random() * (max - min + 1) + min);
+    console.log(this.lyrics[x]);
+    console.log(this.lyrics[x+1]);
+    console.log(this.lyrics[x+2]);
+    console.log(this.lyrics[x+3]);
 }
 
 
