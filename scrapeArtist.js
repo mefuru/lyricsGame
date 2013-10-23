@@ -5,16 +5,9 @@ var artist = require("./modules/artist"),
 	request = require("request"),
 	util = require("util"),
 	async = require("async"),
-	Artist = require("./MongoDB/schema").Artist,
+	Artist = require("./MongoDB/schema").Artist, // don't understand the .Artist
 	_ = require("underscore"),
 	mongoose = require("mongoose");
-
-// https://github.com/MatthewMueller/cheerio
-// https://github.com/mikeal/request
-// http://nodejs.org/api/util.html
-// http://underscorejs.org/
-// https://github.com/caolan/async
-// http://mongoosejs.com/docs/guide.html
 
 var geniusQuery = {
     albumURLs: function(artistName, callback) {
@@ -49,17 +42,16 @@ var geniusQuery = {
     },
 
     songData: function(songURL, callback) {
-		    request(songURL, function (error, response, body) {
-			      if (error || response.statusCode !== 200) throw "Couldn't get song: " + songURL;
-
-			      var $ = cheerio.load(body);
+	    request(songURL, function (error, response, body) {
+            if (error || response.statusCode !== 200) throw "Couldn't get song: " + songURL;
+            var $ = cheerio.load(body);
             var title = utilsRegex.obtainSongTitle($("h1.song_title a")["0"]["next"]["data"])
             console.log("Got song: ", title);
             var lyricsText = $(".lyrics_container .lyrics p").text();
             callback(null, {
-			          title: title,
-				        trackNumber: $(".album_title_and_track_number").text().trim().split(" ")[1],
-				        lyrics: lyricsText.split("\n"),
+                title: title,
+                trackNumber: $(".album_title_and_track_number").text().trim().split(" ")[1],
+                lyrics: lyricsText.split("\n"),
                 URL: songURL
             });
         });
@@ -71,7 +63,7 @@ var geniusQuery = {
 var getAlbumsForArtist = function(artistName, callback) {
     geniusQuery.albumURLs(artistName, function(error, albumURLs) {
         async.parallel(_.map(albumURLs, function(albumURL) {
-	          return function (parallelCallback) {
+            return function (parallelCallback) {
                 console.log("processing album", albumURL)
                 geniusQuery.albumData(homeURL + albumURL, parallelCallback);
             };
@@ -86,7 +78,8 @@ var getSongsForAlbums = function(albums, callback) {
         };
     }), function (errors, songs) {
 		    callback(errors, songs);
-    });
+        }
+    );
 };
 
 var getAlbumSongs = function(album, songURLs, callback) {
@@ -111,15 +104,13 @@ var songDataToTrack = function(songData) {
 };
 
 var saveArtist = function(rapper, callback) {
-		new Artist(rapper).save(function (err) {
+    new Artist(rapper).save(function (err) {
         if (err !== null) throw "Error saving " + rapper.name + " into DB: " + err;
         callback();
-		});
+    });
 };
 
-// Connect to DB
-mongoose.connect("mongodb://localhost/rapgenius");
-
+mongoose.connect("mongodb://localhost/rapgenius");  // Connect to DB
 var homeURL = "http://rapgenius.com";
 var rapper = new artist(process.argv[2] || "Skinnyman");
 getAlbumsForArtist(rapper.name, function(error, albums) {
@@ -128,7 +119,6 @@ getAlbumsForArtist(rapper.name, function(error, albums) {
         _.map(_.map(_.flatten(songsData), songDataToTrack), function(track) {
             rapper.addSong(track);
         });
-
         saveArtist(rapper, function() {
             rapper.printFourLyricsFromARandomSong();
             process.exit(0);
